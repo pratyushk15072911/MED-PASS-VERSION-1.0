@@ -1,0 +1,139 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User account profile for authenticated Doctors and Patients in MedPass.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Firebase Auth UID of the user.",
+          "maxLength": 128
+        },
+        "email": {
+          "type": "string",
+          "description": "Primary user email address.",
+          "maxLength": 256
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Full name or professional title.",
+          "maxLength": 120
+        },
+        "role": {
+          "type": "string",
+          "description": "Role type: doctor or patient.",
+          "enum": ["doctor", "patient"]
+        },
+        "licenseOrPatientId": {
+          "type": "string",
+          "description": "Medical license number for doctors or patient identifier for patients.",
+          "maxLength": 64
+        },
+        "facility": {
+          "type": "string",
+          "description": "Hospital or clinic affiliation.",
+          "maxLength": 120
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Account creation timestamp."
+        },
+        "lastLoginAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last authenticated sign-in timestamp."
+        }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "PatientRecord": {
+      "title": "PatientRecord",
+      "description": "Clinical health passport and emergency details for a patient.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "patientId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "age": {
+          "type": "number"
+        },
+        "gender": {
+          "type": "string",
+          "maxLength": 30
+        },
+        "bloodType": {
+          "type": "string",
+          "maxLength": 10
+        },
+        "primaryDoctorName": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["id", "name", "bloodType"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "Cryptographic audit trail event for clinical chart accesses.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "eventType": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "accessorName": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "facilityLocation": {
+          "type": "string",
+          "maxLength": 120
+        }
+      },
+      "required": ["id", "eventType", "accessorName"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/entities/UserProfile"
+      },
+      "description": "User profile records containing doctor or patient authentication credentials."
+    },
+    "/patients/{patientId}": {
+      "schema": {
+        "$ref": "#/entities/PatientRecord"
+      },
+      "description": "Shared clinical emergency records accessible to authorized doctors and patient owner."
+    },
+    "/auditLogs/{logId}": {
+      "schema": {
+        "$ref": "#/entities/AuditLog"
+      },
+      "description": "Security audit access logs recorded during clinician chart reviews."
+    }
+  }
+}

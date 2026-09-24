@@ -1,0 +1,8 @@
+{
+  "name": "Remix MedPass Clinical Reader \u0026 Health Passport",
+  "description": "Encrypted clinical health reader with 30-second triage dashboard, CDSS contraindication alerts, OCR document digitization, and zero-residual privacy audit logs.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

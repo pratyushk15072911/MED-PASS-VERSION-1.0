@@ -1,0 +1,389 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-playfair: 'Playfair Display', serif;
+    --font-public-sans: 'Public Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-inter: 'Inter', sans-serif;
+    --font-manrope: 'Manrope', sans-serif;
+  }
+
+  body {
+    font-family: var(--font-public-sans);
+    color: #001f2a;
+    background-color: #f4faff;
+  }
+}
+
+.font-playfair {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+.font-public-sans {
+  font-family: 'Public Sans', sans-serif;
+}
+
+.font-inter {
+  font-family: 'Inter', sans-serif;
+}
+
+.font-manrope {
+  font-family: 'Manrope', sans-serif;
+}
+
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+
+.material-symbols-outlined.fill-1 {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.sparkline-green {
+  stroke: #10B981;
+  stroke-width: 2.5;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.sparkline-area-green {
+  fill: rgba(16, 185, 129, 0.12);
+}
+
+/* Custom subtle scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #bec9c5;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #707975;
+}
+
+/* MedPass Entry Cinematic Keyframes */
+@keyframes reticle-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes reticle-spin-reverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes cardiac-pulse {
+  0% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 16px rgba(0, 168, 125, 0.35));
+  }
+  14% {
+    transform: scale(1.07);
+    filter: drop-shadow(0 0 26px rgba(0, 168, 125, 0.65));
+  }
+  26% {
+    transform: scale(1.01);
+    filter: drop-shadow(0 0 18px rgba(0, 168, 125, 0.4));
+  }
+  40% {
+    transform: scale(1.12);
+    filter: drop-shadow(0 0 32px rgba(20, 184, 166, 0.75));
+  }
+  65% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 16px rgba(0, 168, 125, 0.35));
+  }
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 16px rgba(0, 168, 125, 0.35));
+  }
+}
+
+@keyframes ecg-dash {
+  0% {
+    stroke-dashoffset: 600;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes holographic-beam {
+  0%, 100% {
+    opacity: 0.35;
+    transform: translateY(0) scaleX(1);
+  }
+  50% {
+    opacity: 0.75;
+    transform: translateY(-4px) scaleX(1.04);
+  }
+}
+
+@keyframes shockwave-ring {
+  0% {
+    transform: scale(0.2);
+    opacity: 0.9;
+  }
+  70% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+@keyframes float-gentle {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(3deg);
+  }
+}
+
+.animate-reticle-slow {
+  animation: reticle-spin 34s linear infinite;
+}
+
+.animate-reticle-reverse {
+  animation: reticle-spin-reverse 26s linear infinite;
+}
+
+.animate-cardiac-pulse {
+  animation: cardiac-pulse 1.15s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+}
+
+.animate-ecg-stream {
+  stroke-dasharray: 600;
+  animation: ecg-dash 2.4s linear infinite;
+}
+
+.animate-hologram-pedestal {
+  animation: holographic-beam 2.2s ease-in-out infinite;
+}
+
+.animate-shockwave {
+  animation: shockwave-ring 1.2s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+}
+
+.animate-float-cross {
+  animation: float-gentle 4s ease-in-out infinite;
+}
+
+/* Simple, elegant ambient background keyframes */
+@keyframes ambient-drift-1 {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(30px, -25px) scale(1.08);
+  }
+  66% {
+    transform: translate(-25px, 20px) scale(0.95);
+  }
+}
+
+@keyframes ambient-drift-2 {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  40% {
+    transform: translate(-35px, 30px) scale(1.1);
+  }
+  75% {
+    transform: translate(25px, -20px) scale(0.92);
+  }
+}
+
+@keyframes ambient-ripple {
+  0% {
+    transform: translate(-50%, -50%) scale(0.65);
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.35;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.2);
+    opacity: 0;
+  }
+}
+
+@keyframes subtle-breath {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.16;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.12);
+    opacity: 0.28;
+  }
+}
+
+.animate-ambient-1 {
+  animation: ambient-drift-1 18s ease-in-out infinite;
+}
+
+.animate-ambient-2 {
+  animation: ambient-drift-2 22s ease-in-out infinite;
+}
+
+.animate-ripple-1 {
+  animation: ambient-ripple 6s cubic-bezier(0.1, 0.4, 0.2, 1) infinite;
+}
+
+.animate-ripple-2 {
+  animation: ambient-ripple 6s cubic-bezier(0.1, 0.4, 0.2, 1) infinite 3s;
+}
+
+.animate-subtle-breath {
+  animation: subtle-breath 5s ease-in-out infinite;
+}
+
+/* Continuous seamless flowing ECG motion */
+@keyframes ecg-flow-infinite {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.animate-ecg-flow {
+  animation: ecg-flow-infinite 10s linear infinite;
+  will-change: transform;
+}
+
+.animate-ecg-flow-reverse {
+  animation: ecg-flow-infinite 14s linear infinite reverse;
+  will-change: transform;
+}
+
+@keyframes pulse-lead {
+  0%, 100% {
+    opacity: 0.85;
+    filter: drop-shadow(0 0 10px rgba(0, 168, 125, 0.5));
+  }
+  50% {
+    opacity: 1;
+    filter: drop-shadow(0 0 20px rgba(0, 168, 125, 0.85)) drop-shadow(0 0 32px rgba(16, 185, 129, 0.45));
+  }
+}
+
+.animate-pulse-lead {
+  animation: pulse-lead 2.2s ease-in-out infinite;
+}
+
+/* Smooth luminous energy wave and ribbon animations */
+@keyframes ribbon-drift-1 {
+  0% {
+    transform: translate3d(-2%, 0%, 0) scaleY(1);
+  }
+  50% {
+    transform: translate3d(2%, -3%, 0) scaleY(1.08);
+  }
+  100% {
+    transform: translate3d(-2%, 0%, 0) scaleY(1);
+  }
+}
+
+@keyframes ribbon-drift-2 {
+  0% {
+    transform: translate3d(3%, -2%, 0) scaleX(1);
+  }
+  50% {
+    transform: translate3d(-3%, 2%, 0) scaleX(1.05);
+  }
+  100% {
+    transform: translate3d(3%, -2%, 0) scaleX(1);
+  }
+}
+
+@keyframes ribbon-drift-3 {
+  0% {
+    transform: rotate(0deg) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: rotate(1.5deg) translate3d(-10px, 8px, 0);
+  }
+  100% {
+    transform: rotate(0deg) translate3d(0, 0, 0);
+  }
+}
+
+.animate-ribbon-1 {
+  animation: ribbon-drift-1 14s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-ribbon-2 {
+  animation: ribbon-drift-2 18s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-ribbon-3 {
+  animation: ribbon-drift-3 22s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Premium medical glassmorphic shadow */
+.shadow-premium-medical {
+  box-shadow: 
+    0 24px 48px -12px rgba(0, 40, 35, 0.06),
+    0 12px 24px -8px rgba(0, 79, 69, 0.04),
+    0 0 0 1px rgba(255, 255, 255, 0.8) inset,
+    0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+/* Real-time oscilloscope sweep animation */
+@keyframes ecg-sweep-head {
+  0% {
+    left: -40px;
+    opacity: 0;
+  }
+  3% {
+    opacity: 1;
+  }
+  97% {
+    opacity: 1;
+  }
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
+}
+
+.animate-ecg-sweep {
+  animation: ecg-sweep-head 4s linear infinite;
+  will-change: left;
+}
+
+
