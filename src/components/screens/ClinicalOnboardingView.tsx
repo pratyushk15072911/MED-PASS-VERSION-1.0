@@ -32,14 +32,16 @@ export const ClinicalOnboardingView: React.FC<ClinicalOnboardingViewProps> = ({ 
   const [ans2, setAns2] = useState('Montgomery');
 
   // Step 3 State (6-Digit OTP)
-  const [otp, setOtp] = useState(['8', '4', '7', '2', '9', '1']);
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [otpError, setOtpError] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
   const handleOtpChange = (index: number, val: string) => {
     if (val.length > 1) val = val.slice(-1);
+    setOtpError('');
     const newOtp = [...otp];
-    newOtp[index] = val;
+    newOtp[index] = val.replace(/\D/g, '');
     setOtp(newOtp);
 
     // Auto-advance focus
@@ -50,14 +52,21 @@ export const ClinicalOnboardingView: React.FC<ClinicalOnboardingViewProps> = ({ 
   };
 
   const handleVerify = () => {
+    const fullCode = otp.join('');
+    if (fullCode.length < 6) {
+      setOtpError('Please enter all 6 digits of your clinician security code.');
+      return;
+    }
+
     setIsVerifying(true);
+    setOtpError('');
     setTimeout(() => {
       setIsVerifying(false);
       setIsSuccess(true);
       setTimeout(() => {
         onCompleteOnboarding();
-      }, 1200);
-    }, 900);
+      }, 1000);
+    }, 800);
   };
 
   return (
@@ -274,6 +283,12 @@ export const ClinicalOnboardingView: React.FC<ClinicalOnboardingViewProps> = ({ 
                 ))}
               </div>
 
+              {otpError && (
+                <div className="mb-4 text-xs font-semibold text-rose-600 bg-rose-50 border border-rose-200 rounded-xl p-2.5">
+                  {otpError}
+                </div>
+              )}
+
               {isSuccess ? (
                 <div className="p-3 bg-[#10b981]/20 border border-[#10b981]/40 rounded-xl text-xs font-bold text-[#047857] flex items-center justify-center gap-2 animate-bounce">
                   <CheckCircle2 className="w-4 h-4" />
@@ -283,7 +298,7 @@ export const ClinicalOnboardingView: React.FC<ClinicalOnboardingViewProps> = ({ 
                 <button
                   onClick={handleVerify}
                   disabled={isVerifying}
-                  className="w-full bg-[#004f45] hover:bg-[#003831] text-white py-3.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-md transition-all flex items-center justify-center gap-2"
+                  className="w-full bg-[#004f45] hover:bg-[#003831] text-white py-3.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   {isVerifying ? (
                     <span>Verifying Cryptographic Enclave...</span>
@@ -298,8 +313,16 @@ export const ClinicalOnboardingView: React.FC<ClinicalOnboardingViewProps> = ({ 
 
               <p className="text-[11px] text-[#546067] mt-4">
                 Didn't receive the code?{' '}
-                <button onClick={() => setOtp(['8', '4', '7', '2', '9', '1'])} className="font-bold text-[#004f45] hover:underline">
-                  Resend Code (45s)
+                <button
+                  type="button"
+                  onClick={() => {
+                    const freshCode = Math.floor(100000 + Math.random() * 900000).toString().split('');
+                    setOtp(freshCode);
+                    setOtpError('');
+                  }}
+                  className="font-bold text-[#004f45] hover:underline cursor-pointer"
+                >
+                  Generate Demonstration PIN
                 </button>
               </p>
             </div>

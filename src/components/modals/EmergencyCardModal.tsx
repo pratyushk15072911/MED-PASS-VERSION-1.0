@@ -72,7 +72,18 @@ export const EmergencyCardModal: React.FC<EmergencyCardModalProps> = ({
               <Droplet className="w-5 h-5 fill-[#ba1a1a]" />
               {patient.bloodType}
             </span>
-            <span className="text-[10px] text-[#93000a] font-bold mt-0.5 block">Universal Red Cell Donor</span>
+            <span className="text-[10px] text-[#93000a] font-bold mt-0.5 block">
+              {(() => {
+                const bt = (patient.bloodType || '').trim().toUpperCase();
+                if (bt === 'O-') return 'Universal Red Cell Donor';
+                if (bt === 'O+') return 'Universal Donor for Rh+';
+                if (bt === 'AB+') return 'Universal Recipient (ABO/Rh)';
+                if (bt === 'AB-') return 'Universal Plasma Donor';
+                if (bt.startsWith('A')) return 'A & AB Recipient Compatible';
+                if (bt.startsWith('B')) return 'B & AB Recipient Compatible';
+                return 'ABO/Rh Type Verified';
+              })()}
+            </span>
           </div>
 
           <div className="p-4 bg-[#e6f6ff] border border-[#c9e7f7] rounded-2xl text-center">

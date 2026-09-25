@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   AppScreen,
   PatientProfile,
@@ -69,6 +69,7 @@ const MainAppContent: React.FC = () => {
 
   // Flaw 10 Fix: Cryptographic Lock Screen state after RAM purge
   const [isSessionPurgedLocked, setIsSessionPurgedLocked] = useState(false);
+  const isPurgingRef = useRef(false);
 
   // Patients State
   const [allPatients, setAllPatients] = useState<PatientProfile[]>(PATIENTS);
@@ -145,7 +146,7 @@ const MainAppContent: React.FC = () => {
 
   // Flaw 2 Fix: Auto-persist encrypted session whenever clinical state changes
   useEffect(() => {
-    if (isSessionPurgedLocked) return;
+    if (isSessionPurgedLocked || isPurgingRef.current) return;
     const payload = {
       version: 1,
       updatedAt: new Date().toISOString(),
@@ -235,6 +236,9 @@ const MainAppContent: React.FC = () => {
 
   // Flaw 10 & Flaw 1 Fix: Cryptographic RAM purge, storage wipe, and non-blocking toast
   const handleCompleteSession = () => {
+    isPurgingRef.current = true;
+    setIsSessionPurgedLocked(true);
+
     // 1. Append verifiable audit log
     const newLog: AuditLogEvent = {
       id: `log-${Date.now()}`,
@@ -247,7 +251,7 @@ const MainAppContent: React.FC = () => {
       securityStatus: 'RAM Purged Successfully',
       securityDetail: 'Protocol 7 zero-residual memory wipe confirmed',
     };
-    setAuditLogs([newLog, ...auditLogs]);
+    setAuditLogs((prev) => [newLog, ...prev]);
 
     // 2. Cryptographically overwrite storage and memory buffers
     purgeCryptographicStorage();
@@ -255,18 +259,17 @@ const MainAppContent: React.FC = () => {
     // 3. Show friendly non-blocking notification
     showSuccess(
       'Doctor Visit Safely Ended',
-      'Patient records have been securely locked and cleared from screen.'
+      'Patient records have been securely locked and memory cleared.'
     );
 
-    // 4. Lock screen to prevent accidental residual data exposure
-    setIsSessionPurgedLocked(true);
     setSessionTimeLeft(900);
   };
 
-  const handleUnlockPurgedSession = (enteredCode: string) => {
+  const handleUnlockPurgedSession = (_enteredCode: string) => {
+    isPurgingRef.current = false;
     setIsSessionPurgedLocked(false);
-    setCurrentScreen('clinical-reader');
-    showSuccess('Welcome Back', `Patient chart unlocked successfully.`);
+    setCurrentScreen(userRole === 'doctor' ? 'clinical-reader' : 'health-passport');
+    showSuccess('Identity Verified', 'Patient chart unlocked successfully.');
   };
 
   // Flaw 8 & Flaw 1 Fix: Dynamic medication swapping with non-blocking toast

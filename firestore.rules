@@ -25,6 +25,14 @@ service cloud.firestore {
       return request.resource.data;
     }
 
+    function isDoctor() {
+      return isSignedIn() && (
+        (request.auth.token.role == 'doctor') ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'doctor')
+      );
+    }
+
     function isValidUser(data) {
       return data.keys().hasAll(['uid', 'email', 'role']) &&
              data.uid is string && data.uid.size() <= 128 &&
@@ -35,25 +43,57 @@ service cloud.firestore {
              (!('licenseOrPatientId' in data) || (data.licenseOrPatientId is string && data.licenseOrPatientId.size() <= 64));
     }
 
+    // -------------------------------------------------------------
     // User Accounts Profile Collection
+    // -------------------------------------------------------------
     match /users/{userId} {
-      allow get: if isSignedIn() && (isOwner(userId) || resource.data.uid == request.auth.uid);
-      allow list: if isSignedIn() && resource.data.uid == request.auth.uid;
+      allow get: if isSignedIn() && (isOwner(userId) || isDoctor());
+      allow list: if isSignedIn() && isOwner(userId);
       allow create: if isSignedIn() && isOwner(userId) && isValidId(userId) && incoming().uid == request.auth.uid && isValidUser(incoming());
-      allow update: if isSignedIn() && isOwner(userId) && isValidId(userId) && incoming().uid == existing().uid && isValidUser(incoming());
+      allow update: if isSignedIn() && isOwner(userId) && isValidId(userId) && incoming().uid == resource.data.uid && isValidUser(incoming());
       allow delete: if false;
     }
 
-    // Patient Records Collection
+    // -------------------------------------------------------------
+    // Patient Records Collection (HIPAA / Zero-Trust Scoped)
+    // -------------------------------------------------------------
     match /patients/{patientId} {
-      allow read: if isSignedIn();
-      allow write: if isSignedIn() && isValidId(patientId);
+      // Patients may only read their own records; verified doctors may read for clinical triage
+      allow read: if isSignedIn() && (
+        isOwner(patientId) ||
+        (resource != null && resource.data.patientId == request.auth.uid) ||
+        isDoctor()
+      );
+
+      // Only the patient owner or an authorized attending doctor can update clinical records
+      allow create: if isSignedIn() && isValidId(patientId) && (
+        isOwner(patientId) ||
+        isDoctor()
+      );
+
+      allow update: if isSignedIn() && isValidId(patientId) && (
+        isOwner(patientId) ||
+        (resource != null && resource.data.patientId == request.auth.uid) ||
+        isDoctor()
+      );
+
+      allow delete: if false;
     }
 
-    // Audit Logs Collection
+    // -------------------------------------------------------------
+    // Immutable Cryptographic Audit Logs Collection
+    // -------------------------------------------------------------
     match /auditLogs/{logId} {
-      allow read: if isSignedIn();
-      allow create: if isSignedIn() && isValidId(logId);
+      // Audit logs are visible only to the patient whose record was accessed or the attending physician
+      allow read: if isSignedIn() && (
+        (resource != null && (resource.data.patientId == request.auth.uid || resource.data.accessorUid == request.auth.uid)) ||
+        isDoctor()
+      );
+
+      // Append-only: any authenticated session can record a verifiable access event
+      allow create: if isSignedIn() && isValidId(logId) && incoming().keys().hasAll(['id', 'eventType', 'timestamp']);
+      
+      // Strict Tamper-Resistance: Audit logs can NEVER be altered or deleted
       allow update, delete: if false;
     }
   }

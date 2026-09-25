@@ -24,7 +24,7 @@ export const PurgedSessionLockScreen: React.FC<PurgedSessionLockScreenProps> = (
   onSendCodeViaEmail,
   onSendTimeoutReport,
 }) => {
-  const [inputCode, setInputCode] = useState(requiredCode || '847291');
+  const [inputCode, setInputCode] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
 
@@ -34,8 +34,15 @@ export const PurgedSessionLockScreen: React.FC<PurgedSessionLockScreenProps> = (
 
     setTimeout(() => {
       setIsVerifying(false);
-      onUnlockSession(codeToTest || requiredCode || '847291');
-    }, 200);
+      const cleanInput = (codeToTest || '').replace(/\D/g, '').trim();
+      const cleanExpected = (requiredCode || '847291').replace(/\D/g, '').trim();
+
+      if (cleanInput.length === 6 && cleanInput === cleanExpected) {
+        onUnlockSession(cleanInput);
+      } else {
+        setErrorMsg('Invalid 6-digit access PIN. Please verify code or send a new code via email.');
+      }
+    }, 300);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -101,12 +108,12 @@ export const PurgedSessionLockScreen: React.FC<PurgedSessionLockScreenProps> = (
                   setInputCode(e.target.value.replace(/\D/g, ''));
                   setErrorMsg('');
                 }}
-                placeholder={`e.g. ${requiredCode}`}
+                placeholder="••••••"
                 className="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-700 rounded-xl text-center text-lg font-mono font-bold tracking-widest text-emerald-400 outline-none focus:border-emerald-500 transition-colors"
               />
             </div>
             {errorMsg && (
-              <p className="text-[11px] text-rose-400 font-medium flex items-center gap-1 mt-1">
+              <p className="text-[11px] text-rose-400 font-medium flex items-center justify-center gap-1 mt-1">
                 <AlertOctagon className="w-3.5 h-3.5 shrink-0" />
                 {errorMsg}
               </p>
@@ -120,23 +127,13 @@ export const PurgedSessionLockScreen: React.FC<PurgedSessionLockScreenProps> = (
             className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-slate-950 rounded-xl font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg cursor-pointer"
           >
             {isVerifying ? (
-              <span>Unlocking Patient Chart...</span>
+              <span>Verifying Access PIN...</span>
             ) : (
               <>
-                <span>Re-Open Medical Chart</span>
+                <span>Unlock Patient Chart</span>
                 <ArrowRight className="w-4 h-4" />
               </>
             )}
-          </button>
-
-          {/* Easy One-Click Button for Non-Tech Users */}
-          <button
-            type="button"
-            onClick={() => handleUnlock(requiredCode || '847291')}
-            className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-            <span>One-Click Re-Open (Code: {requiredCode})</span>
           </button>
 
           {/* Email OTP and Session Report Options */}
